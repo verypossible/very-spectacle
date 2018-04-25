@@ -1,0 +1,29 @@
+# The front matter are the props for Spectacle's <Slide />:
+# http://formidable.com/open-source/spectacle/docs/tag-api/#slide-base
+#
+# It also takes the "Base" props:
+# http://formidable.com/open-source/spectacle/docs/props/
+---
+  transition:
+    - zoom
+  bgColor: primary
+---
+
+# This is the content of your slide. It accepts any valid Spectacle tag:
+# http://formidable.com/open-source/spectacle/docs/tag-api/
+#
+# You can pass any of the accepted tag's props as a map.
+# the 'content' prop is what will get rendered inside the tag.
+Heading:
+  size: 1
+  fit: true
+  caps: true
+  lineHeight: 1
+  textColor: secondary
+  content: My First Slide
+Text:
+  margin: "10px 0 0"
+  textColor: tertiary
+  fit: true
+  bold: true
+  content: It's pretty nifty you can build clean presentations with YML
