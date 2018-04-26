@@ -14,16 +14,22 @@
 #
 # You can pass any of the accepted tag's props as a map.
 # the 'content' prop is what will get rendered inside the tag.
-Heading:
+Spectacle:Heading:
   size: 1
   fit: true
   caps: true
   lineHeight: 1
   textColor: secondary
   content: My First Slide
-Text:
-  margin: "10px 0 0"
+Spectacle:Text:
+  margin: "10px 0"
   textColor: tertiary
   fit: true
   bold: true
   content: It's pretty nifty you can build clean presentations with YML
+Spectacle:List:
+  content:
+    Spectacle:ListItem:1:
+      content: Item 1
+    Spectacle:ListItem:2:
+      content: Item 2

@@ -1,91 +1,35 @@
-import * as React from 'react'
-import * as S from 'string'
-import * as Spectacle from 'spectacle'
+const context: any = require.context('../presentations', true, /\.yml$/)
 
-interface ContentConfig {
-  content: string
-  [key: string]: string | boolean
-}
+const modules = {}
+const subscriptions: any[] = []
 
-interface PresentationConfig {
-  colors: {
-    [key: string]: string
-  }
-  deck: {
-    [key: string]: string | string[]
-  }
-  fonts: {
-    [key: string]: string | object
-  }
-  outline: string[]
-}
+if (module.hot) {
+  module.hot.accept(context.id, function() {
+    const reloadedContext = require.context('../presentations', true, /\.yml$/)
 
-type Presentation = {
-  data: PresentationConfig
-}
-
-/** Webpack loader */
-const presentationContext = require.context(
-  '../presentations/my-first-presentation',
-  true,
-  /(.*\/.*.yml)$/
-)
-
-const parseId = (path: string) => S(path).between('/', '.').s
-
-const getDataFromPath = (path: string) => ({
-  data: presentationContext(path),
-  id: parseId(path)
-})
-
-const createMap = (
-  acc: object,
-  { data, id }: { data: object; id: string }
-) => ({
-  ...acc,
-  [id]: data
-})
-
-/** Load Presentation Configuration */
-const pickConfig = (id: string) => id.includes('index')
-
-const loadConfig = presentationContext
-  .keys()
-  .filter(pickConfig)
-  .map(getDataFromPath)
-  .reduce((acc, curr) => ({ ...acc, ...curr }), {}) as Presentation
-
-/** Load Slides */
-const pickSlides = (id: string) => !id.includes('index')
-
-const loadSlides = presentationContext
-  .keys()
-  .filter(pickSlides)
-  .map(getDataFromPath)
-  .reduce(createMap, {})
-
-/** Configure slide & build content */
-const buildSlideContents = (slideElements: object) =>
-  Object.entries(slideElements).map(
-    (
-      [component, { content, ...props }]: [string, ContentConfig],
-      index: number
-    ) =>
-      React.createElement(
-        Spectacle[component],
-        { key: index, ...props },
-        content
+    const changedModules = reloadedContext
+      .keys()
+      .map((key: string) => [key, reloadedContext(key)])
+      .filter(
+        (reloadedModule: any) =>
+          modules[reloadedModule[0]] !== reloadedModule[1]
       )
-  )
 
-const slides = loadConfig.data.outline
-  .map(slide => loadSlides[slide])
-  .map(([config, content], index) =>
-    React.createElement(
-      Spectacle.Slide,
-      { key: index, ...config },
-      buildSlideContents(content)
-    )
-  )
+    changedModules.forEach((module: any) => {
+      modules[module[0]] = module[1]
+      subscriptions.forEach(f => f(module[0], module[1], true))
+    })
+  })
+}
 
-export default { ...loadConfig.data, slides }
+const subscribe = (f: any) => {
+  context.keys().map((key: string) => {
+    const module = context(key)
+    modules[key] = module
+    f(key, module, false)
+  })
+  subscriptions.push(f)
+  return subscriptions
+}
+
+export { modules, subscribe, subscriptions }
