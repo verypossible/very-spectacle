@@ -1,7 +1,19 @@
-import preloader from 'spectacle/lib/utils/preloader'
+import * as S from 'string'
 
-export const images = {
-  // city: require('../assets/city.jpg'),
-}
+const context: any = require.context(
+  '../presentations',
+  true,
+  /\.(jpeg|jpg|png|svg)$/
+)
 
-preloader(images)
+const images = {}
+
+context.keys().map((key: string) => {
+  const module = context(key)
+  const file = key.split('/').pop()
+  const attr = S(file).between('', '.').s
+  console.log(attr)
+  images[attr] = module
+})
+
+export default images

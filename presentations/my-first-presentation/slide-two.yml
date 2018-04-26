@@ -4,16 +4,20 @@
   bgColor: primary
 ---
 
-Heading:
+Spectacle:Heading:
   size: 1
   fit: true
   caps: true
   lineHeight: 1
   textColor: secondary
-  content: Truth...
-Text:
+  content: Powered By Spectacle
+Spectacle:Link:
   margin: "10px 0 0"
   textColor: tertiary
   fit: true
   bold: true
-  content: mind blown
+  href: http://formidable.com/open-source/spectacle/docs
+  target: _blank
+  content: read the spectacle docs!
+Custom:Example:
+  content: this is super custom

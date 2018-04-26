@@ -18,6 +18,9 @@
         "noUnusedLocals": true,
         "baseUrl": "."
     },
+    "types": [
+      "webpack-env"
+    ],
     "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack", "jest", "src/setupTests.ts"],
     "awesomeTypescriptLoaderOptions": {
       "useBabel": true,

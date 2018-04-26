@@ -4,41 +4,56 @@ import { Deck } from 'spectacle'
 
 import createTheme from 'spectacle/lib/themes/default'
 
-import config from './loader'
-// import Slide from './Slide'
-
-import './images'
+import { subscribe } from './loader'
+import { renderSlides, subscribeToData } from './parser'
 
 require('normalize.css')
 
-const theme = createTheme(config.colors, config.fonts)
-
 interface State {
-  // tslint:disable-next-line:no-any
-  slides?: React.ReactElement<any>[]
+  config?: {
+    [key: string]: any
+  }
+  slides?: {
+    [key: string]: React.ReactElement<any>
+  }
 }
 
 export class Presentation extends React.Component<{}, State> {
   state: State = {}
 
   componentDidMount() {
-    console.log(config.slides)
+    const data = subscribeToData(subscribe, this.updateSlide)
 
-    this.setState({
-      slides: config.slides
-    })
+    this.setState(data)
+  }
+
+  public updateSlide = (slide: object) => {
+    const presentation =
+      this.state.config && this.state.config.activePresentation
+
+    if (presentation) {
+      this.setState({
+        [presentation]: {
+          ...this.state[presentation],
+          ...slide
+        }
+      })
+    }
   }
 
   render() {
-    if (!this.state.slides) {
+    if (!this.state.config) {
       return <div>Loading...</div>
     }
 
+    const { config, ...presentations } = this.state
+
+    const active = presentations[config.activePresentation]
+    const theme = createTheme(active.config.colors, active.config.fonts)
+
     return (
-      <Deck theme={theme} {...config.deck}>
-        {this.state.slides.map((slide, index) => {
-          return React.cloneElement(slide, { key: index })
-        })}
+      <Deck theme={theme} {...active.config.deck}>
+        {renderSlides(active)}
       </Deck>
     )
   }

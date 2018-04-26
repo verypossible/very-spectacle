@@ -1,5 +1,5 @@
 # Very Spectacle Presentations
-This is a simple presentation framework build with [create-react-app-typescript](https://github.com/wmonk/create-react-app-typescript) [docs](https://github.com/wmonk/create-react-app-typescript/blob/master/packages/react-scripts/template/README.md) and [Spectacle](http://formidable.com/open-source/spectacle/)
+This is a simple, extensible, and configuration driven presentation framework built with [create-react-app-typescript](https://github.com/wmonk/create-react-app-typescript) [docs](https://github.com/wmonk/create-react-app-typescript/blob/master/packages/react-scripts/template/README.md) and [Spectacle](http://formidable.com/open-source/spectacle/).
 
 ## Getting Started
 Clone the project and install the dependencies via `yarn install`.
@@ -11,7 +11,7 @@ You can now start the project via `yarn start`.
 Navigate to `presentations` and make a new directory called `my-first-presentation`.
 
 ### Presentation Config
-Within that folder, create your presentation's config in a file named `index.yml`. Every presentation must have this file in order to build.
+Within that folder, create your presentation's config in a file named `config.yml`. Every presentation must have this file in order to build.
 
 Config Example:
 ```
@@ -77,14 +77,14 @@ Slide Example:
 #
 # You can pass any of the accepted tag's props as a map.
 # the 'content' prop is what will get rendered inside the tag.
-Heading:
+Spectacle:Heading:
   size: 1
   fit: true
   caps: true
   lineHeight: 1
   textColor: secondary
   content: My First Slide
-Text:
+Spectacle:Text:
   margin: "10px 0 0"
   textColor: tertiary
   fit: true
@@ -92,13 +92,41 @@ Text:
   content: It's pretty nifty you can build clean presentations with YML
 ```
 
-### Changing The Active Presentation
-In `src/loader`, update the `presentationContext` with the correct location of your presentation:
+### Images
+You can create any arbitrary directory(ies) in your presentation folder to store images you want to use in your presentation.
 
+Name your images with a unique name across all of your presentations, then reference the name when adding props for a given tag via the `src` key.
+
+Currently, only `.jpg`, `.jpeg`, `.png`, and `.svg` image types will be matched. If you need to add a custom type, go to `src/images.ts` and add the extension to the `context` regex.
+
+See the demo presentation(s) for an example.
+
+### Referencing Tags & Custom Components
+As well as all the [Spectactle tags](http://formidable.com/open-source/spectacle/docs/tag-api/), You can write and use any arbitrary React components in your presentation. You can also load components from a third-party library.
+
+Before you can use them in your slide, you'll need to add them to the registry at `src/registry.ts`.
+
+Example:
 ```
-const presentationContext = require.context(
-  '../presentations/my-first-presentation',     /** <-------- Update this */
-  true,
-  /(.*\/.*.yml)$/
-)
+import * as Recharts from 'recharts'
+import * as Spectacle from 'spectacle'
+
+import { Example } from './components'
+
+const Custom = {
+  Example
+}
+
+export default {
+  Custom,
+  Recharts,
+  Spectacle
+}
 ```
+
+Once you've registered your components, you can reference them in your YML file via `NameSpace:ComponentName`.
+
+**Important:** If you use the same component multiple times in any given object, you must add a key to the end of it. Example: `NameSpace:ComponentName:Foo`, `NameSpace:ComponentName:Bar`
+
+## Changing The Active Presentation
+In `presentations/config.yml`, update the `activePresentation` with the matching key for the directory where the presentation is located.
